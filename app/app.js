@@ -16,11 +16,11 @@ const app = new App(config);
 // App Logic
 // =================================================================================
 
-var selected='';
-console.log('Outside:selected-'+selected);
+var selected = '';
 app.setHandler({
     'LAUNCH': function () {
-        let speech = `<speak> <emphasis level="strong">Welcome</emphasis> to the game of  <say-as interpret-as="interjection">knock knock</say-as>.<p> Here are the rules:<break time="1s"/> I'll start by saying knock knock and then you've to say "who's there".</p> <p>Do you want to play?</p></speak>`;
+        let speech = `<speak><audio src='https://s3.amazonaws.com/ask-soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_intro_01.mp3'/>Welcome to the game of <say-as interpret-as="interjection">knock knock</say-as><p> Here are the rules:<break time="1s"/> 
+        <audio src='https://s3.amazonaws.com/ask-soundlibrary/musical/amzn_sfx_drum_comedy_01.mp3'/>I\'ll start by saying knock knock and then you've to say "who's there".</p> <p>Do you want to play?</p></speak>`;
         this.ask(speech, `Say yes to start.`);
     },
 
@@ -32,7 +32,7 @@ app.setHandler({
             .ask(speech, reprompt);
     },
     'AMAZON.NoIntent': function () {
-        this.tell('You said No. Quitting the game.');
+        this.tell('Ok! It seems you are not interested in playing.<speak><say-as interpret-as="interjection">zap</say-as></speak>');
     },
     'knocked': {
 
@@ -42,9 +42,14 @@ app.setHandler({
         },
         'itemIntent': function () {                      //"a broken pencil who?"
             let speech = selected.conclusion;
-            this.ask(speech + `<speak><break time="2s"/><say-as interpret-as="interjection">ha ha</say-as>. Do you want more?</speak>`);
+            this.ask(speech + `<speak><break time="2s"/><audio src='https://s3.amazonaws.com/ask-soundlibrary/human/amzn_sfx_laughter_giggle_02.mp3'/>
+            Do you want more?</speak>`);
         },
-
+        'funnyIntent':function(){
+            let speech=`<speak><audio src='https://s3.amazonaws.com/ask-soundlibrary/human/amzn_sfx_laughter_giggle_01.mp3'/>
+            You got me! You are smart kid. Bye</speak>`;
+            this.tell(speech);
+        },
         'AMAZON.YesIntent': function () {
             this.toStatelessIntent('AMAZON.YesIntent');
         },
