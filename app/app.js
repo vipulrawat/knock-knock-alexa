@@ -5,27 +5,12 @@
 // =================================================================================
 
 const { App } = require('jovo-framework');
-
+const jokes = require('./files');
 const config = {
     logging: false,
 };
 
 const app = new App(config);
-
-
-var jokes = [
-    { item: 'Cash',conclusion: 'No thanks, I prefer peanuts.'},
-    { item: 'Owls',conclusion: 'Yes, they do.'},
-    { item: 'kanga', conclusion: 'Actually, it\'s kangaroo.' },
-    { item: 'Deja', conclusion: 'Knock!Knock.' },
-    { item: 'An extraterrestrial', conclusion: 'Wait-how many extrateresstrial do you know?' },
-    { item: 'Spell', conclusion: 'W-H-O' },
-    { item: 'Hatch', conclusion: 'God bless you.' },
-    { item: 'Doris', conclusion: 'Doris locked, that\'s why I had to knock.' },
-    { item: 'Nobel', conclusion: 'No bell so I\'ll knock.' },
-    { item: 'Bless', conclusion: 'I did\'s sneeze!' },
-    { item: 'Icecream', conclusion: 'I scream if you don\'t let me in.' }
-];
 
 // =================================================================================
 // App Logic
@@ -35,16 +20,14 @@ var selected='';
 console.log('Outside:selected-'+selected);
 app.setHandler({
     'LAUNCH': function () {
-        selected = jokes[Math.floor((Math.random() * jokes.length))];
-        console.log('Inside launch:selected-'+selected);
-
-        let speech = `Welcome to the game of knock knock. Here are the rules: I'll start by saying knock knock and then you've to say "who's there". Do you want to continue?`;
+        let speech = `<speak> <emphasis level="strong">Welcome</emphasis> to the game of  <say-as interpret-as="interjection">knock knock</say-as>.<p> Here are the rules:<break time="1s"/> I'll start by saying knock knock and then you've to say "who's there".</p> <p>Do you want to play?</p></speak>`;
         this.ask(speech, `Say yes to start.`);
     },
 
     'AMAZON.YesIntent': function () {
-        let speech = `Knock!Knock!`;
-        let reprompt = `Knock! Knock!`;
+        selected = jokes[Math.floor((Math.random() * jokes.length))];
+        let speech = `<speak><say-as interpret-as="interjection">knock knock</say-as></speak>`;
+        let reprompt = `<speak><say-as interpret-as="interjection">knock knock</say-as></speak>`;
         this.followUpState('knocked')
             .ask(speech, reprompt);
     },
@@ -54,29 +37,27 @@ app.setHandler({
     'knocked': {
 
         'whosThere': function () {                         //"who is there"
-            console.log('Inside whosThere:selected-'+selected);
-
             let speech = selected.item;
             this.ask(speech);
         },
         'itemIntent': function () {                      //"a broken pencil who?"
             let speech = selected.conclusion;
-            this.ask(speech + ' Hahahaha. Do you want more?');
+            this.ask(speech + `<speak><break time="2s"/><say-as interpret-as="interjection">ha ha</say-as>. Do you want more?</speak>`);
         },
 
         'AMAZON.YesIntent': function () {
-            this.toStatelessIntent('LAUNCH');
+            this.toStatelessIntent('AMAZON.YesIntent');
         },
         'AMAZON.NoIntent': function () {
-            this.tell('Ok See you later.Say open knock knock for more.');
+            this.tell(`<speak> <say-as interpret-as="interjection">hmm</say-as> See you later. Say open <say-as interpret-as="interjection">knock knock</say-as> for more.</speak>`);
         }
         ,
         'Unhandled': function () {
-            this.tell('Sorry, inside knocked, the intent not found');
+            this.tell('<speak><say-as interpret-as="interjection">na-na</say-as> You brroke the rules. Start again.</speak>');
         }
     },
     'Unhandled': function () {
-        this.tell('Global unhandled state');
+        this.tell('<speak><say-as interpret-as="interjection">uh oh</say-as> You did it wrong.</speak>');
     }
 });
 
