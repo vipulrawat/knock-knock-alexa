@@ -4,5 +4,5 @@
 			"name": "alexa"
 		}
 	},
-	"endpoint": "https://webhook.jovo.cloud/02a824d9-2e9a-44cd-8ace-49003c6a46cb"
+	"endpoint": "arn:aws:lambda:ap-south-1:744333648057:function:knock2"
 }
