@@ -21,7 +21,7 @@ app.setHandler({
     'LAUNCH': function () {
         let speech = `<speak><audio src='https://s3.amazonaws.com/ask-soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_intro_01.mp3'/>Welcome to the game of <say-as interpret-as="interjection">knock knock</say-as><p> Here are the rules:<break time="1s"/> 
         <audio src='https://s3.amazonaws.com/ask-soundlibrary/musical/amzn_sfx_drum_comedy_01.mp3'/>I\'ll start by saying knock knock and then you've to say "who's there".</p> <p>Do you want to play?</p></speak>`;
-        this.alexaSkill().showSimpleCard('Hello kid', 'Say who is there after I say knock knock.');
+        this.alexaSkill().showSimpleCard('Hello kid', `Say "who's there?" after I say knock knock.`);
         this.ask(speech, `Say yes to start.`);
     },
 
@@ -38,7 +38,7 @@ app.setHandler({
         this.tell('Ok! It seems you are not interested in playing.<speak><say-as interpret-as="interjection">zap</say-as></speak>');
     },
     'AMAZON.HelpIntent': function () {
-        let speech = `<speak>This will be a two way interactive session, based on knock-knock joke. I'll start first by saying knock-knock, you will ask "who's there?", I'll give the pun, you should respond with "pun who?" and then I'll conclude.Meanwhile you can say Stop or Cancel to exit. Simple! Do you want to start?</speak>`;
+        let speech = `<speak>This will be a two way interactive session, based on knock-knock joke. I'll start first by saying knock-knock, you will ask "who's there?", I'll give the pun, you should respond with "pun who?" and then I'll conclude. Meanwhile you can say Stop or Cancel to exit. Simple! Do you want to start?</speak>`;
         let reprompt = `Say yes to start and no to end.`;
         this.ask(speech, reprompt);
     },
@@ -61,12 +61,11 @@ app.setHandler({
         },
         'itemIntent': function () {                      //"a broken pencil who?"
             let speech = `<speak><prosody rate="fast">${selected.conclusion}</prosody></speak>`;
-            this.alexaSkill().showSimpleCard('Knock! Knock!', `${speech} Say 'yes' if you want more`);
+            this.alexaSkill().showSimpleCard('Knock! Knock!', `${selected.conclusion} Say 'yes' if you want more`);
             this.ask(speech + `<speak><break time="2s"/><audio src='https://s3.amazonaws.com/ask-soundlibrary/human/amzn_sfx_laughter_giggle_02.mp3'/>
             Do you want more?</speak>`);
         },
         'funnyIntent': function () {
-
             let speech = `<speak><audio src='https://s3.amazonaws.com/ask-soundlibrary/human/amzn_sfx_laughter_giggle_01.mp3'/>
             You got me! You are smart kid. Bye</speak>`;
             this.alexaSkill().showSimpleCard('Knock! Knock!', 'You win!');
@@ -81,15 +80,19 @@ app.setHandler({
             this.endSession();
         },
         'AMAZON.StopIntent': function () {
-            this.toStatelessIntent('AMAZON.StopIntent');
+            let speech = `Ok! Bye! See you soon.`;
+            this.tell(speech)
         },
         'AMAZON.CancelIntent': function () {
             this.toStatelessIntent('AMAZON.StopIntent');
         },
-        
+        'AMAZON.HelpIntent':function(){
+            this.toStatelessIntent('AMAZON.HelpIntent');
+        }
+        ,
         'Unhandled': function () {
             this.alexaSkill().showSimpleCard('Knock! Knock!', 'Start again by saying \'open knock knock\'');
-            this.tell('<speak><say-as interpret-as="interjection">na-na</say-as> You broke the rules. Start again!</speak>');
+            this.tell('<speak><say-as interpret-as="interjection">na-na</say-as>. You broke the rules. Start again!</speak>');
             this.endSession();
         }
     },
